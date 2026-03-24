@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #1976d2, #42a5f5);
+    }
+
+    .login-container {
+      background: white;
+      padding: 40px;
+      width: 350px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .login-container h2 {
+      margin-bottom: 10px;
+    }
+
+    .role-text {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    .link {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #1976d2;
+      text-decoration: none;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="login-container">
+  <h2>Login</h2>
+  <p class="role-text" id="roleText"></p>
+
+  <input type="email" id="email" placeholder="Enter Email">
+  <input type="password" id="password" placeholder="Enter Password">
+
+  <button onclick="login()">Login</button>
+
+  <div class="error" id="errorMsg"></div>
+
+  <div class="link">
+    Don't have an account? <a href="register.html">Register</a>
+  </div>
+</div>
+
+<script>
+  // Show selected role
+  const role = localStorage.getItem("role");
+  const roleText = document.getElementById("roleText");
+
+  if (role === "doctor") {
+    roleText.innerText = "Logging in as Doctor 👨‍⚕️";
+  } else {
+    roleText.innerText = "Logging in as Patient 👤";
+  }
+
+  function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+
+    // Validation
+    if (!email || !password) {
+      errorMsg.innerText = "All fields are required!";
+      return;
+    }
+
+    // Fake login (for now frontend only)
+    const user = {
+      email: email,
+      role: role || "patient"
+    };
+
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // Redirect
+    if (role === "doctor") {
+      window.location.href = "doctor-dashboard.html";
+    } else {
+      window.location.href = "patient-dashboard.html";
+    }
+  }
+</script>
+
+</body>
+</html>

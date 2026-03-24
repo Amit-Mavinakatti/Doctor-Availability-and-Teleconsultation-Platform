@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patient Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f4f6f9;
+    }
+
+    header {
+      background: #1976d2;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header button {
+      background: red;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .doctor-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin-bottom: 5px;
+    }
+
+    .status {
+      font-size: 13px;
+      margin-bottom: 10px;
+      color: green;
+    }
+
+    button.book {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .call-btn {
+      margin-top: 8px;
+      background: green;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+    }
+
+    .close {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      float: right;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2 id="welcomeText">Welcome</h2>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+  <h2>Available Doctors</h2>
+  <div class="doctor-list" id="doctorList"></div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal()">X</button>
+    <h3>Book Appointment</h3>
+
+    <input type="date" id="date">
+    <input type="time" id="time">
+
+    <button onclick="confirmBooking()">Confirm</button>
+  </div>
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  document.getElementById("welcomeText").innerText =
+    "Welcome, " + (user?.email || "Patient");
+
+  const doctorList = document.getElementById("doctorList");
+  let selectedDoctor = null;
+
+  // Load doctors from backend
+  async function loadDoctors() {
+    const res = await fetch("http://localhost:5000/api/doctors");
+    const doctors = await res.json();
+
+    doctorList.innerHTML = "";
+
+    doctors.forEach(d => {
+
+      // unique room per doctor
+      const roomId = "room_" + d._id;
+
+      doctorList.innerHTML += `
+        <div class="card">
+          <h3>${d.userId?.name || "Doctor"}</h3>
+          <p>${d.specialization}</p>
+          <p>${d.available ? "Available" : "Offline"}</p>
+
+          <button class="book" onclick="openModal('${d._id}')">Book</button>
+
+          <button class="call-btn" onclick="startCall('${roomId}')">
+            Start Call 📞
+          </button>
+        </div>
+      `;
+    });
+  }
+
+  function openModal(id) {
+    selectedDoctor = id;
+    document.getElementById("modal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("modal").style.display = "none";
+  }
+
+  async function confirmBooking() {
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!date || !time) {
+      alert("Please select date & time");
+      return;
+    }
+
+    try {
+      await fetch("http://localhost:5000/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          patientId: user._id,
+          doctorId: selectedDoctor,
+          date,
+          time
+        })
+      });
+
+      alert("Appointment booked successfully ✅");
+      closeModal();
+
+    } catch (err) {
+      alert("Error booking appointment ❌");
+    }
+  }
+
+  // ✅ WebRTC CALL ENTRY
+  function startCall(roomId) {
+    window.location.href = `video.html?room=${roomId}`;
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "home.html";
+  }
+
+  loadDoctors();
+</script>
+
+</body>
+</html>

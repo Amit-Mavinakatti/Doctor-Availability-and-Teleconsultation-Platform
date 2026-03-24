@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Feedback</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 400px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Patient Feedback</h2>
+
+    <form id="feedbackForm">
+      
+      <label for="doctorId">Select Doctor</label>
+      <select id="doctorId" required></select>
+
+      <label for="rating">Rating (1 - 5)</label>
+      <input type="number" id="rating" min="1" max="5" required>
+
+      <label for="comment">Comment</label>
+      <textarea id="comment" placeholder="Write your feedback..."></textarea>
+
+      <button type="submit">Submit Feedback</button>
+
+    </form>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api";
+
+    // Load doctors into dropdown
+    async function loadDoctors() {
+      try {
+        const res = await fetch(`${API_URL}/doctors`);
+        const doctors = await res.json();
+
+        const select = document.getElementById("doctorId");
+
+        select.innerHTML = doctors.map(doc => 
+          `<option value="${doc._id}">${doc.name} (${doc.specialization})</option>`
+        ).join("");
+
+      } catch (err) {
+        console.error("Error loading doctors:", err);
+      }
+    }
+
+    // Submit feedback
+    document.getElementById("feedbackForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const doctorId = document.getElementById("doctorId").value;
+      const rating = document.getElementById("rating").value;
+      const comment = document.getElementById("comment").value;
+
+      const token = localStorage.getItem("token");
+
+      try {
+        const res = await fetch(`${API_URL}/feedback`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            doctorId,
+            rating,
+            comment
+          })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("message").innerText = data.message;
+
+        document.getElementById("feedbackForm").reset();
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("message").innerText = "Error submitting feedback";
+      }
+    });
+
+    // Initialize
+    loadDoctors();
+  </script>
+
+</body>
+</html>

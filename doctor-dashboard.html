@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Doctor Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f4f6f9;
+    }
+
+    header {
+      background: #2e7d32;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header button {
+      background: red;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .status-box {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .status-text {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .toggle-btn {
+      padding: 8px 12px;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      background: #1976d2;
+      color: white;
+    }
+
+    .appointments {
+      display: grid;
+      gap: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .card p {
+      margin: 5px 0;
+    }
+
+    .actions button {
+      margin-right: 10px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .accept {
+      background: green;
+      color: white;
+    }
+
+    .reject {
+      background: red;
+      color: white;
+    }
+
+    .call-btn {
+      margin-top: 10px;
+      background: green;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2 id="welcomeText">Doctor Panel</h2>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+  <div class="status-box">
+    <p class="status-text" id="statusText">Status: Online</p>
+    <button class="toggle-btn" onclick="toggleStatus()">Toggle Availability</button>
+  </div>
+
+  <h2>Appointments</h2>
+  <div class="appointments" id="appointmentList"></div>
+
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  document.getElementById("welcomeText").innerText =
+    "Welcome Dr. " + (user?.email || "Doctor");
+
+  let isOnline = true;
+
+  function toggleStatus() {
+    isOnline = !isOnline;
+    document.getElementById("statusText").innerText =
+      "Status: " + (isOnline ? "Online" : "Offline");
+  }
+
+  // Dummy appointments (replace later with backend API)
+  const appointments = [
+    { id: "1", patient: "Chetan", date: "2026-03-25", time: "10:00 AM", status: "Pending" },
+    { id: "2", patient: "Rahul", date: "2026-03-25", time: "11:00 AM", status: "Pending" }
+  ];
+
+  function loadAppointments() {
+    const container = document.getElementById("appointmentList");
+    container.innerHTML = "";
+
+    appointments.forEach(app => {
+
+      // ✅ SAME ROOM FOR BOTH PATIENT & DOCTOR
+      const roomId = "room_" + app.id;
+
+      container.innerHTML += `
+        <div class="card">
+          <p><b>Patient:</b> ${app.patient}</p>
+          <p><b>Date:</b> ${app.date}</p>
+          <p><b>Time:</b> ${app.time}</p>
+          <p><b>Status:</b> ${app.status}</p>
+
+          <div class="actions">
+            <button class="accept" onclick="updateStatus('${app.id}', 'Accepted')">Accept</button>
+            <button class="reject" onclick="updateStatus('${app.id}', 'Rejected')">Reject</button>
+          </div>
+
+          <button class="call-btn" onclick="joinCall('${roomId}')">
+            Join Call 📞
+          </button>
+        </div>
+      `;
+    });
+  }
+
+  function updateStatus(id, status) {
+    const appointment = appointments.find(a => a.id === id);
+    if (appointment) {
+      appointment.status = status;
+      alert("Appointment " + status);
+      loadAppointments();
+    }
+  }
+
+  // ✅ WebRTC JOIN CALL
+  function joinCall(roomId) {
+    window.location.href = `video.html?room=${roomId}`;
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "home.html";
+  }
+
+  loadAppointments();
+</script>
+
+</body>
+</html>

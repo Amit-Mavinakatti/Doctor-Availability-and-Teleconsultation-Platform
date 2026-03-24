@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat with Doctor</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f2027;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 400px;
+      background: #1c2b36;
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #444;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    .msg {
+      margin: 5px 0;
+    }
+
+    input {
+      padding: 10px;
+      width: 75%;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      background: #00e5ff;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-left: 5px;
+    }
+
+    .input-box {
+      display: flex;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+  <h3>💬 Chat with Doctor</h3>
+
+  <div id="messages"></div>
+
+  <div class="input-box">
+    <input id="msgInput" placeholder="Type message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+  const socket = io("http://localhost:5000");
+
+  const roomId = new URLSearchParams(window.location.search).get("room");
+
+  if (!roomId) {
+    alert("Room ID missing!");
+  }
+
+  socket.emit("join-room", roomId);
+
+  // Receive messages from other user
+  socket.on("receive-message", (data) => {
+    addMessage(data.sender + ": " + data.message);
+  });
+
+  function sendMessage() {
+    const input = document.getElementById("msgInput");
+    const message = input.value;
+
+    if (!message) return;
+
+    // show own message
+    addMessage("You: " + message);
+
+    // send via socket
+    socket.emit("send-message", {
+      room: roomId,
+      message: message,
+      sender: "Patient"
+    });
+
+    input.value = "";
+
+    // ✅ Fake doctor reply
+    setTimeout(() => {
+      const reply = generateFakeReply(message);
+      addMessage("Doctor: " + reply);
+    }, 1000 + Math.random() * 2000);
+  }
+
+  function addMessage(msg) {
+    const messages = document.getElementById("messages");
+    const div = document.createElement("div");
+    div.classList.add("msg");
+    div.innerText = msg;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function generateFakeReply(msg) {
+    msg = msg.toLowerCase();
+
+    if (msg.includes("hello") || msg.includes("hi")) {
+      return "Hello! How can I help you today?";
+    }
+
+    if (msg.includes("fever")) {
+      return "Please monitor your temperature and stay hydrated.";
+    }
+
+    if (msg.includes("pain")) {
+      return "Can you describe the pain location and intensity?";
+    }
+
+    if (msg.includes("appointment")) {
+      return "You can book an appointment from the dashboard.";
+    }
+
+    return "Thank you for your message. A doctor will respond shortly.";
+  }
+</script>
+
+</body>
+</html>

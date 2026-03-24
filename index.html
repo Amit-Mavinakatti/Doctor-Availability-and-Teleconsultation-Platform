@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Doctors</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f4f6f9;
+    }
+
+    /* HEADER */
+    header {
+      background: #1976d2;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+    }
+
+    /* SEARCH */
+    .search-box {
+      padding: 20px;
+      text-align: center;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    /* DOCTOR LIST */
+    .container {
+      padding: 20px;
+    }
+
+    .doctor-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin-bottom: 5px;
+    }
+
+    .status {
+      font-size: 13px;
+      margin: 5px 0;
+    }
+
+    .available {
+      color: green;
+    }
+
+    .offline {
+      color: red;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: #1976d2;
+      color: white;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+  <h2>👨‍⚕️ Doctors</h2>
+  <div>
+    <a href="home.html">Home</a>
+    <a href="login.html">Login</a>
+  </div>
+</header>
+
+<!-- SEARCH -->
+<div class="search-box">
+  <input type="text" id="search" placeholder="Search by specialization..." onkeyup="searchDoctors()">
+</div>
+
+<!-- LIST -->
+<div class="container">
+  <div class="doctor-list" id="doctorList"></div>
+</div>
+
+<script>
+  const doctorList = document.getElementById("doctorList");
+
+  const doctors = [
+    { name: "Dr. Sharma", specialization: "Cardiologist", available: true },
+    { name: "Dr. Mehta", specialization: "Dermatologist", available: false },
+    { name: "Dr. Rao", specialization: "Neurologist", available: true },
+    { name: "Dr. Patel", specialization: "Orthopedic", available: true }
+  ];
+
+  function displayDoctors(data) {
+    doctorList.innerHTML = "";
+
+    data.forEach(doc => {
+      doctorList.innerHTML += `
+        <div class="card">
+          <h3>${doc.name}</h3>
+          <p>${doc.specialization}</p>
+          <p class="status ${doc.available ? 'available' : 'offline'}">
+            ${doc.available ? "Available" : "Offline"}
+          </p>
+          <button onclick="goLogin()">Book Appointment</button>
+        </div>
+      `;
+    });
+  }
+
+  function searchDoctors() {
+    const value = document.getElementById("search").value.toLowerCase();
+
+    const filtered = doctors.filter(d =>
+      d.specialization.toLowerCase().includes(value)
+    );
+
+    displayDoctors(filtered);
+  }
+
+  function goLogin() {
+    alert("Please login to book appointment");
+    window.location.href = "login.html";
+  }
+
+  displayDoctors(doctors);
+</script>
+
+</body>
+</html>

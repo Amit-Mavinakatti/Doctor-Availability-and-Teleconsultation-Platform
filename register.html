@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #43cea2, #185a9d);
+    }
+
+    .container {
+      background: white;
+      padding: 35px;
+      width: 380px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .role-text {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 15px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #43cea2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2bbf91;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .link {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #185a9d;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Register</h2>
+  <p class="role-text" id="roleText"></p>
+
+  <input type="text" id="name" placeholder="Full Name">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <!-- Extra field for doctor -->
+  <input type="text" id="specialization" placeholder="Specialization (Doctors only)">
+
+  <button onclick="register()">Register</button>
+
+  <div class="error" id="errorMsg"></div>
+
+  <div class="link">
+    Already have an account? <a href="login.html">Login</a>
+  </div>
+</div>
+
+<script>
+  const role = localStorage.getItem("role");
+  const roleText = document.getElementById("roleText");
+  const specializationInput = document.getElementById("specialization");
+
+  // Show role
+  if (role === "doctor") {
+    roleText.innerText = "Registering as Doctor 👨‍⚕️";
+    specializationInput.style.display = "block";
+  } else {
+    roleText.innerText = "Registering as Patient 👤";
+    specializationInput.style.display = "none";
+  }
+
+  function register() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const specialization = document.getElementById("specialization").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+
+    // Validation
+    if (!name || !email || !password) {
+      errorMsg.innerText = "All fields are required!";
+      return;
+    }
+
+    if (role === "doctor" && !specialization) {
+      errorMsg.innerText = "Please enter specialization!";
+      return;
+    }
+
+    // Save user (temporary frontend storage)
+    const user = {
+      name,
+      email,
+      password,
+      role,
+      specialization: role === "doctor" ? specialization : ""
+    };
+
+    localStorage.setItem("registeredUser", JSON.stringify(user));
+
+    alert("Registration successful!");
+
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>
