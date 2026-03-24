@@ -17,7 +17,6 @@
       overflow-x: hidden;
     }
 
-    /* ================= NAVBAR ================= */
     header {
       position: fixed;
       width: 100%;
@@ -46,7 +45,6 @@
       color: #00e5ff;
     }
 
-    /* ================= HERO ================= */
     .hero {
       height: 100vh;
       display: flex;
@@ -84,7 +82,6 @@
       color: #aaa;
     }
 
-    /* ================= BUTTONS ================= */
     .btn {
       padding: 12px 20px;
       margin: 8px;
@@ -111,7 +108,6 @@
       box-shadow: 0 0 15px #00e5ff;
     }
 
-    /* ================= SECTIONS ================= */
     section {
       padding: 90px 40px;
       text-align: center;
@@ -122,7 +118,6 @@
       color: #00e5ff;
     }
 
-    /* ================= CARDS ================= */
     .cards {
       display: flex;
       justify-content: center;
@@ -137,6 +132,7 @@
       border-radius: 18px;
       border: 1px solid rgba(255,255,255,0.1);
       transition: 0.3s;
+      cursor: pointer;
     }
 
     .card:hover {
@@ -154,7 +150,6 @@
       color: #bbb;
     }
 
-    /* ================= FEATURE CARDS GRID ================= */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -174,7 +169,6 @@
       box-shadow: 0 0 20px rgba(0,229,255,0.2);
     }
 
-    /* ================= PRIORITY CTA ================= */
     .priority {
       background: rgba(255,255,255,0.03);
       border-top: 1px solid rgba(255,255,255,0.08);
@@ -202,14 +196,15 @@
       box-shadow: 0 0 30px #00e5ff;
     }
 
-    /* ================= FOOTER ================= */
     footer {
-      padding: 20px;
-      background: rgba(0,0,0,0.4);
+      padding: 25px;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(15px);
+      border-top: 1px solid rgba(255,255,255,0.1);
       text-align: center;
+      margin-top: 40px;
     }
 
-    /* ================= CHATBOT ================= */
     #chatbot-btn {
       position: fixed;
       bottom: 20px;
@@ -265,7 +260,6 @@
       background: #00e5ff;
       cursor: pointer;
     }
-
   </style>
 </head>
 
@@ -281,7 +275,6 @@
   </nav>
 </header>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-box">
     <h1>Doctor Availability & Teleconsultation Platform</h1>
@@ -294,12 +287,10 @@
   </div>
 </div>
 
-<!-- PRIORITY SECTION -->
 <section class="priority">
   <h2 class="section-title">🚀 Instant Consultation</h2>
 
   <div class="priority-box">
-
     <div class="priority-card">
       <h3>💬 Chat</h3>
       <p>Start real-time conversation with doctors instantly.</p>
@@ -311,11 +302,9 @@
       <p>Face-to-face consultation using WebRTC.</p>
       <button class="btn primary" onclick="startVideoCall()">Start Call</button>
     </div>
-
   </div>
 </section>
 
-<!-- FEATURES GRID -->
 <section>
   <h2 class="section-title">✨ Platform Features</h2>
 
@@ -329,7 +318,6 @@
   </div>
 </section>
 
-<!-- ROLE SECTION -->
 <section>
   <h2 class="section-title">👥 Choose Your Role</h2>
 
@@ -351,8 +339,43 @@
   </div>
 </section>
 
+<!-- ✅ FOOTER ADDED -->
 <footer>
-  © 2026 Alpha Hackers 💎
+  <h3 style="color:#00e5ff;">Team Alpha Hackers</h3>
+
+<div style="display:flex; justify-content:center; flex-wrap:wrap; gap:15px; margin:15px 0;">
+
+  <div style="padding:10px 15px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(255,255,255,0.05);">
+    Amit M <br><small>(Team Leader)</small>
+  </div>
+
+  <div style="padding:10px 15px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(255,255,255,0.05);">
+    Akash J <br><small>(Member 1)</small>
+  </div>
+
+  <div style="padding:10px 15px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(255,255,255,0.05);">
+    Chetan B <br><small>(Member 2)</small>
+  </div>
+
+  <div style="padding:10px 15px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(255,255,255,0.05);">
+    Sujeet S <br><small>(Member 3)</small>
+  </div>
+
+</div>
+
+  <p style="margin:5px 0; color:#888;">
+    © 2026 All Rights Reserved
+  </p>
+
+  <div style="margin-top:10px;">
+    <a href="https://www.linkedin.com/amitmd8" target="_blank" style="color:#00e5ff; margin:0 10px; text-decoration:none;">
+      LinkedIn
+    </a>
+    |
+    <a href="https://github.com/Amit-Mavinakatti" target="_blank" style="color:#00e5ff; margin:0 10px; text-decoration:none;">
+      GitHub
+    </a>
+  </div>
 </footer>
 
 <!-- CHATBOT -->
@@ -387,7 +410,6 @@ function startVideoCall() {
   window.location.href = `video.html?room=${roomId}`;
 }
 
-/* CHATBOT */
 function toggleChat() {
   const box = document.getElementById("chatbot-box");
   box.style.display = box.style.display === "flex" ? "none" : "flex";
