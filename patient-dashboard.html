@@ -8,80 +8,125 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
+      font-family: "Poppins", sans-serif;
     }
 
     body {
-      background: #f4f6f9;
+      background: radial-gradient(circle at top, #0f2027, #0b1c24, #020607);
+      color: white;
     }
 
     header {
-      background: #1976d2;
-      color: white;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    header h2 {
+      color: #00e5ff;
     }
 
     header button {
-      background: red;
+      background: linear-gradient(90deg, #ff4d4d, #ff1a1a);
       border: none;
       color: white;
-      padding: 8px 12px;
+      padding: 8px 14px;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 20px;
+      font-weight: bold;
     }
 
     .container {
       padding: 30px;
     }
 
-    h2 {
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-bottom: 20px;
+      align-items: center;
+    }
+
+    input, select {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.08);
+      color: white;
+    }
+
+    button.action {
+      padding: 10px 15px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(90deg, #00e5ff, #00ff95);
+      color: black;
+      font-weight: bold;
     }
 
     .doctor-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 20px;
     }
 
     .card {
-      background: white;
+      background: rgba(255,255,255,0.05);
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(0,229,255,0.2);
     }
 
     .card h3 {
       margin-bottom: 5px;
+      color: #00e5ff;
     }
 
     .status {
       font-size: 13px;
       margin-bottom: 10px;
-      color: green;
+      color: #00ff95;
+    }
+
+    .offline {
+      color: #ff4d4d;
     }
 
     button.book {
-      background: #1976d2;
-      color: white;
+      background: #00e5ff;
+      color: black;
       border: none;
       padding: 8px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      width: 100%;
+      margin-top: 5px;
+      font-weight: bold;
     }
 
     .call-btn {
       margin-top: 8px;
-      background: green;
-      color: white;
+      background: #00ff95;
+      color: black;
       border: none;
       padding: 8px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       width: 100%;
+      font-weight: bold;
     }
 
     .modal {
@@ -90,22 +135,26 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.7);
       display: none;
       justify-content: center;
       align-items: center;
     }
 
     .modal-content {
-      background: white;
+      background: #111;
       padding: 25px;
-      border-radius: 10px;
+      border-radius: 12px;
       width: 300px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .modal-content h3 {
+      color: #00e5ff;
     }
 
     input {
       width: 100%;
-      padding: 8px;
       margin: 8px 0;
     }
 
@@ -116,6 +165,7 @@
       padding: 5px 10px;
       float: right;
       cursor: pointer;
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -128,6 +178,20 @@
 </header>
 
 <div class="container">
+
+  <!-- Controls -->
+  <div class="top-bar">
+    <input type="text" id="search" placeholder="Search specialization...">
+    
+    <select id="filter">
+      <option value="all">All</option>
+      <option value="true">Available</option>
+      <option value="false">Offline</option>
+    </select>
+
+    <button class="action" onclick="loadDoctors()">Refresh</button>
+  </div>
+
   <h2>Available Doctors</h2>
   <div class="doctor-list" id="doctorList"></div>
 </div>
@@ -153,25 +217,67 @@
   const doctorList = document.getElementById("doctorList");
   let selectedDoctor = null;
 
-  // Load doctors from backend
   async function loadDoctors() {
     const res = await fetch("http://localhost:5000/api/doctors");
-    const doctors = await res.json();
+    let doctors = await res.json();
+
+    const search = document.getElementById("search").value.toLowerCase();
+    const filter = document.getElementById("filter").value;
+
+    if (search) {
+      doctors = doctors.filter(d =>
+        (d.specialization || "").toLowerCase().includes(search)
+      );
+    }
+
+    if (filter !== "all") {
+      const isAvailable = filter === "true";
+      doctors = doctors.filter(d => d.available === isAvailable);
+    }
 
     doctorList.innerHTML = "";
 
-    doctors.forEach(d => {
+    // EMPTY STATE
+    if (doctors.length === 0) {
+      doctorList.innerHTML = `
+        <div style="grid-column:1/-1; text-align:center; padding:30px;">
+          <h3>⚠️ Currently No Available Doctors</h3>
+          <p style="margin:10px 0; color:#aaa;">
+            Please try nearby locations to find more doctors.
+          </p>
 
-      // unique room per doctor
+          <button onclick="goToNearby()" 
+            style="
+              padding:12px 20px;
+              border:none;
+              border-radius:25px;
+              background:linear-gradient(90deg,#00e5ff,#00ff95);
+              color:black;
+              font-weight:bold;
+              cursor:pointer;
+              margin-top:10px;
+            ">
+            📍 Find Nearby Doctors
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    doctors.forEach(d => {
       const roomId = "room_" + d._id;
 
       doctorList.innerHTML += `
         <div class="card">
           <h3>${d.userId?.name || "Doctor"}</h3>
           <p>${d.specialization}</p>
-          <p>${d.available ? "Available" : "Offline"}</p>
+          <p class="status ${d.available ? '' : 'offline'}">
+            ${d.available ? "🟢 Available" : "🔴 Offline"}
+          </p>
 
-          <button class="book" onclick="openModal('${d._id}')">Book</button>
+          <button class="book" onclick="openModal('${d._id}')">
+            Book Appointment
+          </button>
 
           <button class="call-btn" onclick="startCall('${roomId}')">
             Start Call 📞
@@ -179,6 +285,10 @@
         </div>
       `;
     });
+  }
+
+  function goToNearby() {
+    window.location.href = "NearbyDoctors.html";
   }
 
   function openModal(id) {
@@ -193,8 +303,6 @@
   async function confirmBooking() {
     const date = document.getElementById("date").value;
     const time = document.getElementById("time").value;
-
-    const user = JSON.parse(localStorage.getItem("user"));
 
     if (!date || !time) {
       alert("Please select date & time");
@@ -223,7 +331,6 @@
     }
   }
 
-  // ✅ WebRTC CALL ENTRY
   function startCall(roomId) {
     window.location.href = `video.html?room=${roomId}`;
   }
