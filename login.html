@@ -8,7 +8,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
+      font-family: "Poppins", sans-serif;
     }
 
     body {
@@ -16,66 +16,81 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(to right, #1976d2, #42a5f5);
+      background: radial-gradient(circle at top, #0f2027, #0b1c24, #020607);
+      color: white;
     }
 
     .login-container {
-      background: white;
-      padding: 40px;
-      width: 350px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      width: 360px;
+      padding: 35px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 30px rgba(0,229,255,0.1);
       text-align: center;
     }
 
-    .login-container h2 {
+    h2 {
       margin-bottom: 10px;
+      color: #00e5ff;
     }
 
     .role-text {
       font-size: 14px;
-      color: gray;
+      color: #aaa;
       margin-bottom: 20px;
     }
 
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.3);
+      color: white;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #00e5ff;
+      box-shadow: 0 0 8px rgba(0,229,255,0.4);
     }
 
     button {
       width: 100%;
       padding: 12px;
-      background: #1976d2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
       margin-top: 10px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00e5ff, #00ff95);
+      color: black;
       transition: 0.3s;
     }
 
     button:hover {
-      background: #0d47a1;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #00e5ff;
     }
 
     .link {
       margin-top: 15px;
       font-size: 14px;
+      color: #bbb;
     }
 
     .link a {
-      color: #1976d2;
+      color: #00e5ff;
       text-decoration: none;
     }
 
     .error {
-      color: red;
+      color: #ff4d4d;
       font-size: 13px;
-      margin-top: 5px;
+      margin-top: 8px;
     }
   </style>
 </head>
@@ -84,7 +99,7 @@
 
 <div class="login-container">
   <h2>Login</h2>
-  <p class="role-text" id="roleText"></p>
+  <p class="role-text">Login to your account</p>
 
   <input type="email" id="email" placeholder="Enter Email">
   <input type="password" id="password" placeholder="Enter Password">
@@ -99,37 +114,38 @@
 </div>
 
 <script>
-  // Show selected role
-  const role = localStorage.getItem("role");
-  const roleText = document.getElementById("roleText");
-
-  if (role === "doctor") {
-    roleText.innerText = "Logging in as Doctor 👨‍⚕️";
-  } else {
-    roleText.innerText = "Logging in as Patient 👤";
-  }
-
   function login() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
     const errorMsg = document.getElementById("errorMsg");
 
-    // Validation
+    errorMsg.innerText = "";
+
     if (!email || !password) {
       errorMsg.innerText = "All fields are required!";
       return;
     }
 
-    // Fake login (for now frontend only)
-    const user = {
-      email: email,
-      role: role || "patient"
-    };
+    const storedUser = JSON.parse(localStorage.getItem("registeredUser"));
 
-    localStorage.setItem("user", JSON.stringify(user));
+    if (!storedUser) {
+      errorMsg.innerText = "No registered user found!";
+      return;
+    }
 
-    // Redirect
-    if (role === "doctor") {
+    if (storedUser.email !== email || storedUser.password !== password) {
+      errorMsg.innerText = "Invalid credentials!";
+      return;
+    }
+
+    // Save logged-in user
+    localStorage.setItem("user", JSON.stringify({
+      email: storedUser.email,
+      role: storedUser.role
+    }));
+
+    // Redirect based on stored role (MOST IMPORTANT FIX)
+    if (storedUser.role === "doctor") {
       window.location.href = "doctor-dashboard.html";
     } else {
       window.location.href = "patient-dashboard.html";
