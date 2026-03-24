@@ -8,7 +8,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
+      font-family: "Poppins", sans-serif;
     }
 
     body {
@@ -16,66 +16,89 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(to right, #43cea2, #185a9d);
+      background: radial-gradient(circle at top, #0f2027, #0b1c24, #020607);
+      color: white;
     }
 
     .container {
-      background: white;
-      padding: 35px;
       width: 380px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      padding: 30px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 30px rgba(0,229,255,0.1);
       text-align: center;
     }
 
     h2 {
       margin-bottom: 10px;
+      color: #00e5ff;
     }
 
     .role-text {
       font-size: 14px;
-      color: gray;
+      color: #aaa;
       margin-bottom: 15px;
     }
 
-    input, select {
+    input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(0,0,0,0.3);
+      color: white;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #00e5ff;
+      box-shadow: 0 0 8px rgba(0,229,255,0.4);
     }
 
     button {
       width: 100%;
       padding: 12px;
-      background: #43cea2;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
       margin-top: 10px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00e5ff, #00ff95);
+      color: black;
       transition: 0.3s;
     }
 
     button:hover {
-      background: #2bbf91;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #00e5ff;
     }
 
     .error {
-      color: red;
+      color: #ff4d4d;
       font-size: 13px;
-      margin-top: 5px;
+      margin-top: 8px;
     }
 
     .link {
       margin-top: 15px;
       font-size: 14px;
+      color: #bbb;
     }
 
     .link a {
-      color: #185a9d;
+      color: #00e5ff;
       text-decoration: none;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+
+    #specialization {
+      display: none;
     }
   </style>
 </head>
@@ -90,7 +113,7 @@
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
 
-  <!-- Extra field for doctor -->
+  <!-- Doctor only -->
   <input type="text" id="specialization" placeholder="Specialization (Doctors only)">
 
   <button onclick="register()">Register</button>
@@ -107,7 +130,6 @@
   const roleText = document.getElementById("roleText");
   const specializationInput = document.getElementById("specialization");
 
-  // Show role
   if (role === "doctor") {
     roleText.innerText = "Registering as Doctor 👨‍⚕️";
     specializationInput.style.display = "block";
@@ -123,7 +145,8 @@
     const specialization = document.getElementById("specialization").value.trim();
     const errorMsg = document.getElementById("errorMsg");
 
-    // Validation
+    errorMsg.innerText = "";
+
     if (!name || !email || !password) {
       errorMsg.innerText = "All fields are required!";
       return;
@@ -134,7 +157,6 @@
       return;
     }
 
-    // Save user (temporary frontend storage)
     const user = {
       name,
       email,
