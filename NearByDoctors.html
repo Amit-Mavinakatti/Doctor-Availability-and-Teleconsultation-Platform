@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nearby Doctors</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #0f2027, #0b1c24, #020607);
+      color: white;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h1 {
+      color: #00e5ff;
+    }
+
+    .container {
+      padding: 30px;
+      text-align: center;
+    }
+
+    select, input {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #00e5ff, #00ff95);
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .cards {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(0,229,255,0.2);
+    }
+
+    .status {
+      margin-top: 5px;
+      font-size: 13px;
+      color: #00ff95;
+    }
+
+    .offline {
+      color: #ff4d4d;
+    }
+
+    .actions {
+      margin-top: 10px;
+    }
+
+    .actions button {
+      margin: 5px;
+      font-size: 12px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🏥 Nearby Doctors Finder</h1>
+</header>
+
+<div class="container">
+
+  <h3>Select Your Location</h3>
+
+  <select id="locationSelect">
+    <option value="">-- Choose Location --</option>
+    <option value="Hubballi">Hubballi</option>
+    <option value="Dharwad">Dharwad</option>
+    <option value="Bangalore">Bangalore</option>
+    <option value="Mysore">Mysore</option>
+    <option value="Mysore">Delhi</option>
+    <option value="Mysore">Kolkata</option>
+    <option value="Mysore">Mumbai</option>
+    <option value="Mysore">Dhavanagere</option>
+    <option value="Mysore">Bagalkot</option>
+  </select>
+
+  <input type="text" id="searchInput" placeholder="Search specialization...">
+
+  <br>
+
+  <button onclick="loadDoctors()">Find Doctors</button>
+
+  <div class="cards" id="doctorCards"></div>
+
+</div>
+
+<script>
+  const doctorData = {
+    Hubballi: [
+      { name: "Dr. Rao", spec: "Cardiologist", available: true },
+      { name: "Dr. Shetty", spec: "Dermatologist", available: false }
+    ],
+    Dharwad: [
+      { name: "Dr. Patil", spec: "Orthopedic", available: true },
+      { name: "Dr. Kulkarni", spec: "Pediatrician", available: true }
+    ],
+    Bangalore: [
+      { name: "Dr. Sharma", spec: "Neurologist", available: true },
+      { name: "Dr. Verma", spec: "ENT Specialist", available: false }
+    ],
+    Mysore: [
+      { name: "Dr. Naik", spec: "General Physician", available: true },
+      { name: "Dr. Iyer", spec: "Dentist", available: true }
+    ]
+  };
+
+  function loadDoctors() {
+    const location = document.getElementById("locationSelect").value;
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const container = document.getElementById("doctorCards");
+
+    container.innerHTML = "";
+
+    if (!location) {
+      alert("Please select a location");
+      return;
+    }
+
+    let doctors = doctorData[location] || [];
+
+    // Filter by specialization search
+    if (search) {
+      doctors = doctors.filter(doc =>
+        doc.spec.toLowerCase().includes(search)
+      );
+    }
+
+    if (doctors.length === 0) {
+      container.innerHTML = "<p>No doctors found</p>";
+      return;
+    }
+
+    doctors.forEach(doc => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+
+      card.innerHTML = `
+        <h3>${doc.name}</h3>
+        <p><b>Specialization:</b> ${doc.spec}</p>
+        <p class="status ${doc.available ? '' : 'offline'}">
+          ${doc.available ? "🟢 Available" : "🔴 Offline"}
+        </p>
+
+        <div class="actions">
+          <button onclick="chatDoctor('${doc.name}')">💬 Chat</button>
+          <button onclick="bookDoctor('${doc.name}')">📅 Book</button>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  }
+
+  function chatDoctor(name) {
+    alert("Starting chat with " + name);
+    window.location.href = "chat.html?room=room_nearby";
+  }
+
+  function bookDoctor(name) {
+    alert("Appointment requested with " + name);
+  }
+</script>
+
+</body>
+</html>
