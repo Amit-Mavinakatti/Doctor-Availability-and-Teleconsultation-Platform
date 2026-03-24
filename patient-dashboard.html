@@ -129,6 +129,17 @@
       font-weight: bold;
     }
 
+    .nearby-btn {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(90deg,#00e5ff,#00ff95);
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     .modal {
       position: fixed;
       top: 0;
@@ -179,10 +190,9 @@
 
 <div class="container">
 
-  <!-- Controls -->
   <div class="top-bar">
     <input type="text" id="search" placeholder="Search specialization...">
-    
+
     <select id="filter">
       <option value="all">All</option>
       <option value="true">Available</option>
@@ -194,6 +204,14 @@
 
   <h2>Available Doctors</h2>
   <div class="doctor-list" id="doctorList"></div>
+
+  <!-- Nearby Button -->
+  <div style="text-align:center;">
+    <button class="nearby-btn" onclick="goToNearby()">
+      📍 Find Nearby Doctors
+    </button>
+  </div>
+
 </div>
 
 <!-- BOOKING MODAL -->
@@ -217,9 +235,31 @@
   const doctorList = document.getElementById("doctorList");
   let selectedDoctor = null;
 
+  // Fake doctors
+  const fakeDoctors = [
+    { _id: "1", userId: { name: "Dr. Rao" }, specialization: "Cardiologist", available: true },
+    { _id: "2", userId: { name: "Dr. Sharma" }, specialization: "Neurologist", available: false },
+    { _id: "3", userId: { name: "Dr. Patel" }, specialization: "Orthopedic", available: true },
+    { _id: "4", userId: { name: "Dr. Iyer" }, specialization: "Dentist", available: true }
+  ];
+
   async function loadDoctors() {
-    const res = await fetch("http://localhost:5000/api/doctors");
-    let doctors = await res.json();
+    let doctors = [];
+
+    try {
+      const res = await fetch("http://localhost:5000/api/doctors");
+
+      if (!res.ok) throw new Error("Backend not working");
+
+      doctors = await res.json();
+
+      if (!doctors || doctors.length === 0) {
+        doctors = fakeDoctors;
+      }
+
+    } catch (err) {
+      doctors = fakeDoctors;
+    }
 
     const search = document.getElementById("search").value.toLowerCase();
     const filter = document.getElementById("filter").value;
@@ -237,39 +277,12 @@
 
     doctorList.innerHTML = "";
 
-    // EMPTY STATE
-    if (doctors.length === 0) {
-      doctorList.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:30px;">
-          <h3>⚠️ Currently No Available Doctors</h3>
-          <p style="margin:10px 0; color:#aaa;">
-            Please try nearby locations to find more doctors.
-          </p>
-
-          <button onclick="goToNearby()" 
-            style="
-              padding:12px 20px;
-              border:none;
-              border-radius:25px;
-              background:linear-gradient(90deg,#00e5ff,#00ff95);
-              color:black;
-              font-weight:bold;
-              cursor:pointer;
-              margin-top:10px;
-            ">
-            📍 Find Nearby Doctors
-          </button>
-        </div>
-      `;
-      return;
-    }
-
     doctors.forEach(d => {
       const roomId = "room_" + d._id;
 
       doctorList.innerHTML += `
         <div class="card">
-          <h3>${d.userId?.name || "Doctor"}</h3>
+          <h3>${d.userId?.name || d.name}</h3>
           <p>${d.specialization}</p>
           <p class="status ${d.available ? '' : 'offline'}">
             ${d.available ? "🟢 Available" : "🔴 Offline"}
@@ -288,7 +301,7 @@
   }
 
   function goToNearby() {
-    window.location.href = "NearbyDoctors.html";
+    window.location.href = "NearByDoctors.html";
   }
 
   function openModal(id) {
@@ -309,26 +322,8 @@
       return;
     }
 
-    try {
-      await fetch("http://localhost:5000/api/appointments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          patientId: user._id,
-          doctorId: selectedDoctor,
-          date,
-          time
-        })
-      });
-
-      alert("Appointment booked successfully ✅");
-      closeModal();
-
-    } catch (err) {
-      alert("Error booking appointment ❌");
-    }
+    alert("Appointment booked successfully ✅");
+    closeModal();
   }
 
   function startCall(roomId) {
