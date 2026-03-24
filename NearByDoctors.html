@@ -115,11 +115,11 @@
     <option value="Dharwad">Dharwad</option>
     <option value="Bangalore">Bangalore</option>
     <option value="Mysore">Mysore</option>
-    <option value="Mysore">Delhi</option>
-    <option value="Mysore">Kolkata</option>
-    <option value="Mysore">Mumbai</option>
-    <option value="Mysore">Dhavanagere</option>
-    <option value="Mysore">Bagalkot</option>
+    <option value="Delhi">Delhi</option>
+    <option value="Kolkata">Kolkata</option>
+    <option value="Mumbai">Mumbai</option>
+    <option value="Davanagere">Davanagere</option>
+    <option value="Bagalkot">Bagalkot</option>
   </select>
 
   <input type="text" id="searchInput" placeholder="Search specialization...">
@@ -127,6 +127,14 @@
   <br>
 
   <button onclick="loadDoctors()">Find Doctors</button>
+  
+
+<!-- ✅ MAIN QUICK BUTTON -->
+<a href="https://www.google.com/maps/search/Hubballi+hospitals" target="_blank">
+  <button style="margin-left:10px;">
+    📍 Open on Map
+  </button>
+</a>
 
   <div class="cards" id="doctorCards"></div>
 
@@ -166,7 +174,6 @@
 
     let doctors = doctorData[location] || [];
 
-    // Filter by specialization search
     if (search) {
       doctors = doctors.filter(doc =>
         doc.spec.toLowerCase().includes(search)
@@ -192,6 +199,7 @@
         <div class="actions">
           <button onclick="chatDoctor('${doc.name}')">💬 Chat</button>
           <button onclick="bookDoctor('${doc.name}')">📅 Book</button>
+          <button onclick="openMap('${location}')">📍 Find on Maps</button>
         </div>
       `;
 
@@ -206,6 +214,16 @@
 
   function bookDoctor(name) {
     alert("Appointment requested with " + name);
+  }
+
+  function openMap(location) {
+    if (!location) {
+      alert("Please select a location first");
+      return;
+    }
+
+    const url = `https://www.google.com/maps/search/${encodeURIComponent(location + " hospitals")}`;
+    window.open(url, "_blank");
   }
 </script>
 
