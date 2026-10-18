@@ -4,6 +4,13 @@ A full-stack healthcare web application designed to make remote healthcare acces
 
 The platform combines appointment management, real-time messaging, video consultations, and a chatbot assistant in a unified web experience.
 
+
+🌐 Live Demo
+
+🚀 Visit the Live Healthcare Platform
+
+Explore the deployed application to see its homepage, doctor discovery interface, and available consultation features.
+
 ## ✨ Features
 
 ### 🩺 Doctor Listing & Availability
