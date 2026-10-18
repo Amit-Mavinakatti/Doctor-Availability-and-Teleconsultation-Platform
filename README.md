@@ -7,7 +7,7 @@ The platform combines appointment management, real-time messaging, video consult
 
 🌐 Live Demo
 
-🚀 Visit the Live Healthcare Platform
+🚀 [Visit the Live Healthcare Platform] :(https://doctor-availability-and-teleconsult.vercel.app/)
 
 Explore the deployed application to see its homepage, doctor discovery interface, and available consultation features.
 
